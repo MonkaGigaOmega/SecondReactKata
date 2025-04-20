@@ -3,11 +3,12 @@ import { DatePicker } from 'antd';
 import './index.css';
 import { Pagination } from 'antd';
 import CardItem from './components/CardItem';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { format } from 'date-fns';
 import { Spin, Alert } from 'antd';
 import { Online, Offline } from 'react-detect-offline';
 import SearchPanel from './components/SearchPanel';
+import { debounce } from 'lodash';
 const API_KEY = '34c3a46faa654dbc0fab960ecd4f6c31';
 const API_URL = 'https://api.themoviedb.org/3';
 const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w500';
@@ -46,9 +47,9 @@ const App = () => {
   const [movies, setMovies] = useState([]);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchMoviesByKeyword = async (keyword) => {
+  const [filmName, setFilmName] = useState('boy');
+  const fetchMoviesByKeyword = useCallback(
+    debounce(async (keyword) => {
       try {
         setIsLoading(true);
         const response = await fetch(`${API_URL}/search/movie?api_key=${API_KEY}&language=ru-RU&query=${keyword}`);
@@ -63,10 +64,15 @@ const App = () => {
       } finally {
         setIsLoading(false);
       }
-    };
+    }, 300),
+    []
+  );
 
-    fetchMoviesByKeyword('return');
-  }, []);
+  useEffect(() => {
+    if (filmName) {
+      fetchMoviesByKeyword(filmName);
+    }
+  }, [filmName, fetchMoviesByKeyword]);
 
   const displayedMovies = movies.slice(0, 6);
   return (
@@ -81,19 +87,24 @@ const App = () => {
         </div>
       ) : (
         <>
-          <SearchPanel />
+          <SearchPanel filmName={filmName} setFilmName={setFilmName} />
           <div className="slide">
-            {displayedMovies.map((movie) => (
-              <CardItem
-                key={movie.id}
-                imgSrc={`${IMAGE_BASE_URL}${movie.poster_path}`}
-                imgAlt={movie.title}
-                filmTitle={movie.title}
-                releaseDate={format(new Date(movie.release_date), 'MMMM d, yyyy')}
-                genreIds={movie.genre_ids.map((id) => genreIdsToNames[id])}
-                description={truncateText(movie.overview, 20)}
-              />
-            ))}
+            {displayedMovies.map((movie) => {
+              const releaseDate = movie.release_date
+                ? format(new Date(movie.release_date), 'MMMM d, yyyy')
+                : 'Дата неизвестна';
+              return (
+                <CardItem
+                  key={movie.id}
+                  imgSrc={`${IMAGE_BASE_URL}${movie.poster_path}`}
+                  imgAlt={movie.title}
+                  filmTitle={movie.title}
+                  releaseDate={releaseDate}
+                  genreIds={movie.genre_ids.map((id) => genreIdsToNames[id])}
+                  description={truncateText(movie.overview, 20)}
+                />
+              );
+            })}
           </div>
           <Pagination className="pagination" defaultCurrent={1} total={50} />;
         </>
