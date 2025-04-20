@@ -44,7 +44,7 @@
   margin-bottom: 7px;
   display: flex;
   gap: 8px;
-  display: flex;
+  flex-wrap: wrap;
 }
 .genre__item {
   background-color: #f9f9f9;

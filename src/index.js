@@ -1,5 +1,4 @@
 import ReactDOM from 'react-dom/client';
-import { DatePicker } from 'antd';
 import './index.css';
 import { Pagination } from 'antd';
 import CardItem from './components/CardItem';
@@ -81,13 +80,13 @@ const App = () => {
         <Alert message="Отсутствует подключение к интернету" type="error" showIcon />
       </Offline>
       {error && <Alert message="Ошибка" description={error} type="error" showIcon closable />}
-      {isLoading ? (
-        <div className="loader">
-          <Spin size="large" />
-        </div>
-      ) : (
-        <>
-          <SearchPanel filmName={filmName} setFilmName={setFilmName} />
+      <>
+        <SearchPanel filmName={filmName} setFilmName={setFilmName} />
+        {isLoading ? (
+          <div className="loader">
+            <Spin size="large" />
+          </div>
+        ) : displayedMovies.length > 0 ? (
           <div className="slide">
             {displayedMovies.map((movie) => {
               const releaseDate = movie.release_date
@@ -106,9 +105,13 @@ const App = () => {
               );
             })}
           </div>
-          <Pagination className="pagination" defaultCurrent={1} total={50} />;
-        </>
-      )}
+        ) : (
+          <div className="slide-noFilms">
+            Oops! It seems you typed something incorrectly or such a movie does not exist.
+          </div>
+        )}
+        <Pagination className="pagination" defaultCurrent={1} total={50} />;
+      </>
     </>
   );
 };
