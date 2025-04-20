@@ -1,7 +1,6 @@
 import './CardItem.css';
-import { useState } from 'react';
 
-export default function CardItem() {
+export default function CardItem({ imgSrc, imgAlt, filmTitle, releaseDate, genreIds, description }) {
   // const [cardInfo, setCardInfo] = useState({
   //   imgSrc: null,
   //   imgAlt: null,
@@ -13,22 +12,18 @@ export default function CardItem() {
   // setCardInfo({});
   return (
     <div className="cardItem">
-      <img
-        className="film-logo"
-        src="https://i.pinimg.com/236x/ee/8c/9f/ee8c9f9e9a91ae6f361d388c58da22bd.jpg"
-        alt="poster film"
-      />
+      <img className="film-logo" src={imgSrc} alt={imgAlt} />
       <div className="content">
-        <h2 className="title">Лололошка ушел с ютуба</h2>
-        <div className="release-date">March 333, 2077</div>
+        <h2 className="title">{filmTitle}</h2>
+        <div className="release-date">{releaseDate}</div>
         <div className="genre">
-          <span className="genre__item">Драма</span>
-          <span className="genre__item">Треш</span>
+          {genreIds.map((genre, index) => (
+            <span key={index} className="genre__item">
+              {genre}
+            </span>
+          ))}
         </div>
-        <div className="description">
-          Lololoshka вики — это сообщество Фэндома на портале Увлечения. Полная версия. Company Logo. Privacy Preference
-          Center. When you visit any website, it may store ...
-        </div>
+        <div className="description">{description}</div>
       </div>
     </div>
   );
