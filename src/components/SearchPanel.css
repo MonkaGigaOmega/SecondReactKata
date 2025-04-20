@@ -1,0 +1,9 @@
+.search-panel__input {
+  border: solid 1px lightgray;
+  border-radius: 5px;
+  width: 938px;
+  height: 40px;
+}
+.search-panel {
+  margin-bottom: 36px;
+}

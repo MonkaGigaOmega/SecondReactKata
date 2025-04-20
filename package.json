@@ -9,7 +9,9 @@
     "@testing-library/user-event": "^13.5.0",
     "antd": "^5.24.7",
     "axios": "^1.8.4",
+    "date-fns": "^4.1.0",
     "react": "^19.1.0",
+    "react-detect-offline": "^2.4.5",
     "react-dom": "^19.1.0",
     "react-scripts": "5.0.1",
     "web-vitals": "^2.1.4"
