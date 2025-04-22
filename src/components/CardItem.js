@@ -1,6 +1,6 @@
 import './CardItem.css';
 import React, { useState } from 'react';
-import { Spin } from 'antd';
+import { Spin, Rate } from 'antd';
 
 export default function CardItem({ imgSrc, imgAlt, filmTitle, releaseDate, genreIds, description }) {
   const [isLoading, setIsLoading] = useState(true);
@@ -49,6 +49,7 @@ export default function CardItem({ imgSrc, imgAlt, filmTitle, releaseDate, genre
           ))}
         </div>
         <div className="description">{description}</div>
+        <Rate allowHalf defaultValue={1.5} count={10} style={{ fontSize: '16px', marginTop: 'auto' }} />;
       </div>
     </div>
   );

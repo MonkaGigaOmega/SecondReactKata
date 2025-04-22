@@ -8,6 +8,7 @@ import { Spin, Alert } from 'antd';
 import { Online, Offline } from 'react-detect-offline';
 import SearchPanel from './components/SearchPanel';
 import { debounce } from 'lodash';
+import { createGuestSession } from './createGuestSession'; //хз
 const API_KEY = '34c3a46faa654dbc0fab960ecd4f6c31';
 const API_URL = 'https://api.themoviedb.org/3';
 const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w500';

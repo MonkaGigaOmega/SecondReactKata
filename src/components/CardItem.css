@@ -39,6 +39,10 @@
 }
 .content {
   padding-left: 20px;
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 .genre {
   margin-bottom: 7px;
