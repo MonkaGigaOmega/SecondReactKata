@@ -4,11 +4,11 @@ import { Pagination } from 'antd';
 import CardItem from './components/CardItem';
 import { useState, useEffect, useCallback } from 'react';
 import { format } from 'date-fns';
-import { Spin, Alert } from 'antd';
+import { Spin, Alert, Rate } from 'antd';
 import { Online, Offline } from 'react-detect-offline';
 import SearchPanel from './components/SearchPanel';
 import { debounce } from 'lodash';
-import { createGuestSession } from './createGuestSession'; //хз
+import axios from 'axios';
 const API_KEY = '34c3a46faa654dbc0fab960ecd4f6c31';
 const API_URL = 'https://api.themoviedb.org/3';
 const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w500';
@@ -43,11 +43,29 @@ const truncateText = (text, wordLimit) => {
   return words.slice(0, wordLimit).join(' ') + '...';
 };
 
+export const createGuestSession = async () => {
+  const url = `https://api.themoviedb.org/3/authentication/guest_session/new?api_key=${API_KEY}`;
+
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    const data = await response.json();
+    return data.guest_session_id;
+  } catch (error) {
+    console.error('Ошибка при создании гостевой сессии:', error);
+    throw error;
+  }
+};
+
 const App = () => {
   const [movies, setMovies] = useState([]);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [filmName, setFilmName] = useState('boy');
+  const [guestSessionId, setGuestSessionId] = useState(null);
+
   const fetchMoviesByKeyword = useCallback(
     debounce(async (keyword) => {
       try {
@@ -69,12 +87,35 @@ const App = () => {
   );
 
   useEffect(() => {
+    const initGuestSession = async () => {
+      try {
+        const sessionId = await createGuestSession();
+        setGuestSessionId(sessionId);
+      } catch (error) {
+        console.error('Ошибка при создании гостевой сессии:', error);
+      }
+    };
+
+    initGuestSession();
+  }, []);
+
+  useEffect(() => {
     if (filmName) {
       fetchMoviesByKeyword(filmName);
     }
   }, [filmName, fetchMoviesByKeyword]);
 
-  const displayedMovies = movies.slice(0, 6);
+  const displayedMovies = movies.slice(0, 20);
+
+  const handleRateChange = async (movieId, value) => {
+    const url = `${API_URL}/movie/${movieId}/rating?api_key=${API_KEY}&guest_session_id=${guestSessionId}`;
+    try {
+      await axios.post(url, { value });
+    } catch (error) {
+      console.error('Ошибка при отправке рейтинга:', error);
+    }
+  };
+
   return (
     <>
       <Offline>
@@ -101,17 +142,16 @@ const App = () => {
                   filmTitle={movie.title}
                   releaseDate={releaseDate}
                   genreIds={movie.genre_ids.map((id) => genreIdsToNames[id])}
-                  description={truncateText(movie.overview, 20)}
-                />
+                  description={truncateText(movie.overview, 50)}
+                  onRateChange={(value) => handleRateChange(movie.id, value)}
+                ></CardItem>
               );
             })}
           </div>
         ) : (
-          <div className="slide-noFilms">
-            Oops! It seems you typed something incorrectly or such a movie does not exist.
-          </div>
+          <div className="slide-noFilms">Oops! Что-то пошло не так или такого фильма не существует.</div>
         )}
-        <Pagination className="pagination" defaultCurrent={1} total={50} />;
+        <Pagination className="pagination" defaultCurrent={1} total={500} />
       </>
     </>
   );

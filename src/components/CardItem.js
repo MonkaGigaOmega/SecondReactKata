@@ -2,24 +2,31 @@ import './CardItem.css';
 import React, { useState } from 'react';
 import { Spin, Rate } from 'antd';
 
-export default function CardItem({ imgSrc, imgAlt, filmTitle, releaseDate, genreIds, description }) {
+export default function CardItem({ imgSrc, imgAlt, filmTitle, releaseDate, genreIds, description, onRateChange }) {
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
-  // const [cardInfo, setCardInfo] = useState({
-  //   imgSrc: null,
-  //   imgAlt: null,
-  //   filmTitle: null,
-  //   releaseDate: null,
-  //   genreIds: [],
-  //   description: null,
-  // });
-  // setCardInfo({});
+  const [rating, setRating] = useState(0);
+
   const handleImageLoad = () => {
     setIsLoading(false);
   };
   const handleImageError = () => {
     setIsLoading(false);
     setHasError(true);
+  };
+
+  const handleRateChange = (value) => {
+    setRating(value);
+    if (onRateChange) {
+      onRateChange(value);
+    }
+  };
+
+  const getRatingColor = (value) => {
+    if (value >= 7) return '#66E900';
+    if (value >= 5) return '#E9D100';
+    if (value >= 3) return '#E97E00';
+    return '#E90000';
   };
 
   return (
@@ -49,7 +56,18 @@ export default function CardItem({ imgSrc, imgAlt, filmTitle, releaseDate, genre
           ))}
         </div>
         <div className="description">{description}</div>
-        <Rate allowHalf defaultValue={1.5} count={10} style={{ fontSize: '16px', marginTop: 'auto' }} />;
+        <Rate
+          allowHalf
+          value={rating}
+          onChange={handleRateChange}
+          count={10}
+          style={{ fontSize: '20px', marginTop: 'auto', marginBottom: '10px' }}
+          character={({ index }) => (
+            <span className="rate-star" style={{ color: index < rating ? getRatingColor(rating) : '#d9d9d9' }}>
+              ★
+            </span>
+          )}
+        />
       </div>
     </div>
   );
