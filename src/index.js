@@ -65,24 +65,30 @@ const App = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [filmName, setFilmName] = useState('boy');
   const [guestSessionId, setGuestSessionId] = useState(null);
+  const [page, setPage] = useState(1);
+  const [totalMovies, setTotalMovies] = useState(0);
 
   const fetchMoviesByKeyword = useCallback(
-    debounce(async (keyword) => {
+    debounce(async (keyword, page) => {
       try {
         setIsLoading(true);
-        const response = await fetch(`${API_URL}/search/movie?api_key=${API_KEY}&language=ru-RU&query=${keyword}`);
+        const response = await fetch(
+          `${API_URL}/search/movie?api_key=${API_KEY}&language=ru-RU&query=${keyword}&page=${page}`
+        );
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
         const data = await response.json();
         setMovies(data.results);
+        setTotalMovies(data.total_results);
+        setPage(page);
       } catch (error) {
         console.error('Ошибка при получении данных:', error);
         setError(error.message);
       } finally {
         setIsLoading(false);
       }
-    }, 300),
+    }, 800),
     []
   );
 
@@ -101,11 +107,9 @@ const App = () => {
 
   useEffect(() => {
     if (filmName) {
-      fetchMoviesByKeyword(filmName);
+      fetchMoviesByKeyword(filmName, page);
     }
-  }, [filmName, fetchMoviesByKeyword]);
-
-  const displayedMovies = movies.slice(0, 20);
+  }, [filmName, page, fetchMoviesByKeyword]);
 
   const handleRateChange = async (movieId, value) => {
     const url = `${API_URL}/movie/${movieId}/rating?api_key=${API_KEY}&guest_session_id=${guestSessionId}`;
@@ -114,6 +118,11 @@ const App = () => {
     } catch (error) {
       console.error('Ошибка при отправке рейтинга:', error);
     }
+  };
+
+  const handlePageChange = (page) => {
+    setPage(page);
+    fetchMoviesByKeyword(filmName, page);
   };
 
   return (
@@ -128,9 +137,9 @@ const App = () => {
           <div className="loader">
             <Spin size="large" />
           </div>
-        ) : displayedMovies.length > 0 ? (
+        ) : movies.length > 0 ? (
           <div className="slide">
-            {displayedMovies.map((movie) => {
+            {movies.map((movie) => {
               const releaseDate = movie.release_date
                 ? format(new Date(movie.release_date), 'MMMM d, yyyy')
                 : 'Дата неизвестна';
@@ -144,18 +153,23 @@ const App = () => {
                   genreIds={movie.genre_ids.map((id) => genreIdsToNames[id])}
                   description={truncateText(movie.overview, 50)}
                   onRateChange={(value) => handleRateChange(movie.id, value)}
-                ></CardItem>
+                />
               );
             })}
           </div>
         ) : (
           <div className="slide-noFilms">Oops! Что-то пошло не так или такого фильма не существует.</div>
         )}
-        <Pagination className="pagination" defaultCurrent={1} total={500} />
+        <Pagination
+          className="pagination"
+          current={page}
+          total={totalMovies}
+          pageSize={20}
+          onChange={handlePageChange}
+        />
       </>
     </>
   );
 };
-
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(<App />);

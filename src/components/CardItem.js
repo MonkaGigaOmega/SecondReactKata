@@ -46,6 +46,7 @@ export default function CardItem({ imgSrc, imgAlt, filmTitle, releaseDate, genre
         {hasError && <div className="film-logo-placeholder">Постера пока нет в нашей базе</div>}
       </div>
       <div className="content">
+        <div className="round-rating">{rating}</div>
         <h2 className="title">{filmTitle}</h2>
         <div className="release-date">{releaseDate}</div>
         <div className="genre">
