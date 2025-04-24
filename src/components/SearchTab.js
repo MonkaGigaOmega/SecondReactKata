@@ -4,7 +4,6 @@ import CardItem from './CardItem';
 import { useState, useEffect, useCallback } from 'react';
 import { format } from 'date-fns';
 import { Spin, Alert } from 'antd';
-import { Offline } from 'react-detect-offline';
 import SearchPanel from './SearchPanel';
 import { debounce } from 'lodash';
 
@@ -66,7 +65,7 @@ const SearchTab = ({ updateRatedMovies }) => {
         setPage(page);
       } catch (error) {
         console.error('Ошибка при получении данных:', error);
-        setError(error.message);
+        setError('Ошибка fetch запроса. Запрос не отправлен. Включите VPN или перезагрузите страницу.');
       } finally {
         setIsLoading(false);
       }
@@ -97,9 +96,6 @@ const SearchTab = ({ updateRatedMovies }) => {
 
   return (
     <>
-      <Offline>
-        <Alert message="Отсутствует подключение к интернету" type="error" showIcon />
-      </Offline>
       {error && <Alert message="Ошибка" description={error} type="error" showIcon closable />}
       <>
         <SearchPanel filmName={filmName} setFilmName={setFilmName} />
@@ -139,7 +135,7 @@ const SearchTab = ({ updateRatedMovies }) => {
           className="pagination"
           current={page}
           total={totalMovies}
-          pageSize={20}
+          defaultPageSize={20}
           onChange={handlePageChange}
         />
       </>

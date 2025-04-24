@@ -1,13 +1,14 @@
 import ReactDOM from 'react-dom/client';
-import { Tabs } from 'antd';
+import { Tabs, Alert } from 'antd';
 import { useState, useEffect } from 'react';
 import SearchTab from './components/SearchTab';
 import Rated from './components/Rated';
-import { createGuestSession } from './components/createGuestSession'; // Обновленный импорт
-
+import { createGuestSession } from './components/createGuestSession';
+import { Offline } from 'react-detect-offline';
 const App = () => {
   const [guestSessionId, setGuestSessionId] = useState(null);
   const [ratedMovies, setRatedMovies] = useState([]);
+  const [error, setError] = useState(null); // Состояние для хранения сообщения об ошибке
 
   useEffect(() => {
     const initGuestSession = async () => {
@@ -23,6 +24,7 @@ const App = () => {
         }
       } catch (error) {
         console.error('Ошибка при создании гостевой сессии:', error);
+        setError('Ошибка при создании гостевой сессии. Пожалуйста, включите VPN'); // Устанавливаем сообщение об ошибке
       }
     };
 
@@ -34,7 +36,7 @@ const App = () => {
     localStorage.setItem('ratedMovies', JSON.stringify(movies));
   };
 
-  if (!guestSessionId) {
+  if (!guestSessionId && !error) {
     return <div>Loading...</div>;
   }
 
@@ -42,7 +44,7 @@ const App = () => {
     {
       key: '1',
       label: 'Search',
-      children: <SearchTab updateRatedMovies={updateRatedMovies} />,
+      children: <SearchTab ratedMovies={ratedMovies} updateRatedMovies={updateRatedMovies} />,
     },
     {
       key: '2',
@@ -51,7 +53,15 @@ const App = () => {
     },
   ];
 
-  return <Tabs defaultActiveKey="1" items={items} />;
+  return (
+    <>
+      <Offline>
+        <Alert message="Отсутствует подключение к интернету." type="error" showIcon />
+      </Offline>
+      {error && <Alert message="Ошибка" description={error} type="error" showIcon closable />}
+      <Tabs defaultActiveKey="1" items={items} />
+    </>
+  );
 };
 
 const root = ReactDOM.createRoot(document.getElementById('root'));

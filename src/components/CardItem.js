@@ -10,11 +10,11 @@ export default function CardItem({
   genreIds,
   description,
   onRateChange,
-  rating = 0,
+  rating: initialRating = 0,
 }) {
   const [isLoading, setIsLoading] = React.useState(true);
   const [hasError, setHasError] = React.useState(false);
-
+  const [rating, setRating] = React.useState(initialRating);
   const handleImageLoad = () => setIsLoading(false);
   const handleImageError = () => {
     setIsLoading(false);
@@ -22,7 +22,8 @@ export default function CardItem({
   };
 
   const handleRateChange = (value) => {
-    if (onRateChange) onRateChange(value);
+    setRating(value); // Обновите локальное состояние
+    if (onRateChange) onRateChange(value); // Вызовите обработчик изменения рейтинга
   };
 
   const getRatingColor = (value) => {
@@ -49,7 +50,9 @@ export default function CardItem({
         {hasError && <div className="film-logo-placeholder">Постера пока нет в нашей базе</div>}
       </div>
       <div className="content">
-        <div className="round-rating">{rating}</div>
+        <div className="round-rating" style={{ borderColor: getRatingColor(rating) }}>
+          {rating}
+        </div>
         <h2 className="title">{filmTitle}</h2>
         <div className="release-date">{releaseDate}</div>
         <div className="genre">
