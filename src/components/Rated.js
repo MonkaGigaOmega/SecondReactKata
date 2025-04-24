@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Spin, Alert } from 'antd';
+import React from 'react';
+import { Spin } from 'antd';
 import CardItem from './CardItem';
 import { format } from 'date-fns';
 import './Rated.css';
@@ -36,79 +36,52 @@ const truncateText = (text, wordLimit) => {
   return words.slice(0, wordLimit).join(' ') + '...';
 };
 
-const Rated = () => {
-  const [ratedMovies, setRatedMovies] = useState([]);
-  const [error, setError] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchRatedMovies = () => {
-      try {
-        const cachedMovies = localStorage.getItem('ratedMovies');
-        if (cachedMovies) {
-          const parsedMovies = JSON.parse(cachedMovies);
-          setRatedMovies(parsedMovies);
-        } else {
-          setError('Вы еще не оценили ни одного фильма.');
-        }
-      } catch (error) {
-        console.error('Ошибка при получении оцененных фильмов:', error);
-        setError(error.message);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchRatedMovies();
-  }, []);
-
+const Rated = ({ ratedMovies, updateRatedMovies }) => {
   const clearLocalStorage = () => {
-    localStorage.removeItem('ratedMovies');
-    setRatedMovies([]);
-    setError('Вы еще не оценили ни одного фильма.');
+    updateRatedMovies([]);
+  };
+
+  const handleRateChange = (movieId, value) => {
+    const updatedMovies = ratedMovies.map((movie) => (movie.id === movieId ? { ...movie, rating: value } : movie));
+    updateRatedMovies(updatedMovies);
   };
 
   return (
     <>
-      {error && <Alert message="Ошибка" description={error} type="error" showIcon closable />}
-      {isLoading ? (
-        <div className="loader">
-          <Spin size="large" />
-        </div>
-      ) : Array.isArray(ratedMovies) && ratedMovies.length > 0 ? (
-        <>
-          <div className="slide">
-            {ratedMovies.map((movie) => {
-              if (!movie || !movie.genre_ids) {
-                console.error('Invalid movie data:', movie);
-                return null;
-              }
-              const releaseDate = movie.release_date
-                ? format(new Date(movie.release_date), 'MMMM d, yyyy')
-                : 'Дата неизвестна';
-              return (
-                <CardItem
-                  key={movie.id}
-                  imgSrc={`${IMAGE_BASE_URL}${movie.poster_path}`}
-                  imgAlt={movie.title}
-                  filmTitle={movie.title}
-                  releaseDate={releaseDate}
-                  genreIds={movie.genre_ids.map((id) => genreIdsToNames[id])}
-                  description={truncateText(movie.overview, 50)}
-                  rating={movie.rating}
-                />
-              );
-            })}
-          </div>
-          <div className="rating-button-wrapper">
-            <button onClick={clearLocalStorage} type="button" className="rating-button">
-              Очистить список
-            </button>
-          </div>
-        </>
+      {ratedMovies.length === 0 ? (
+        <div className="slide-noFilms">Список оценок пуст.</div>
       ) : (
-        <div className="slide-noFilms">Oops! Вы еще не оценили ни одного фильма.</div>
+        <div className="slide">
+          {ratedMovies.map((movie) => {
+            if (!movie) return null;
+
+            const releaseDate = movie.release_date
+              ? format(new Date(movie.release_date), 'MMMM d, yyyy')
+              : 'Дата неизвестна';
+
+            return (
+              <CardItem
+                key={movie.id}
+                imgSrc={`${IMAGE_BASE_URL}${movie.poster_path}`}
+                imgAlt={movie.title}
+                filmTitle={movie.title}
+                releaseDate={releaseDate}
+                genreIds={(movie.genre_ids || []).map((id) => genreIdsToNames[id])}
+                description={truncateText(movie.overview, 33) || 'Описание отсутствует'}
+                rating={movie.rating || 0} // Передаем текущий рейтинг
+                onRateChange={(value) => handleRateChange(movie.id, value)} // Добавляем обработчик изменения рейтинга
+              />
+            );
+          })}
+        </div>
       )}
+      <div className="rating-button-wrapper">
+        {ratedMovies.length !== 0 && (
+          <button onClick={clearLocalStorage} type="button" className="rating-button">
+            Очистить список
+          </button>
+        )}
+      </div>
     </>
   );
 };

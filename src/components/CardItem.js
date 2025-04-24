@@ -1,25 +1,28 @@
 import './CardItem.css';
-import React, { useState } from 'react';
+import React from 'react';
 import { Spin, Rate } from 'antd';
 
-export default function CardItem({ imgSrc, imgAlt, filmTitle, releaseDate, genreIds, description, onRateChange }) {
-  const [isLoading, setIsLoading] = useState(true);
-  const [hasError, setHasError] = useState(false);
-  const [rating, setRating] = useState(0);
+export default function CardItem({
+  imgSrc,
+  imgAlt,
+  filmTitle,
+  releaseDate,
+  genreIds,
+  description,
+  onRateChange,
+  rating = 0,
+}) {
+  const [isLoading, setIsLoading] = React.useState(true);
+  const [hasError, setHasError] = React.useState(false);
 
-  const handleImageLoad = () => {
-    setIsLoading(false);
-  };
+  const handleImageLoad = () => setIsLoading(false);
   const handleImageError = () => {
     setIsLoading(false);
     setHasError(true);
   };
 
   const handleRateChange = (value) => {
-    setRating(value);
-    if (onRateChange) {
-      onRateChange(value);
-    }
+    if (onRateChange) onRateChange(value);
   };
 
   const getRatingColor = (value) => {
@@ -50,7 +53,7 @@ export default function CardItem({ imgSrc, imgAlt, filmTitle, releaseDate, genre
         <h2 className="title">{filmTitle}</h2>
         <div className="release-date">{releaseDate}</div>
         <div className="genre">
-          {genreIds.map((genre, index) => (
+          {genreIds?.map((genre, index) => (
             <span key={index} className="genre__item">
               {genre}
             </span>

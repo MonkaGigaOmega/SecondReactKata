@@ -42,23 +42,7 @@ const truncateText = (text, wordLimit) => {
   return words.slice(0, wordLimit).join(' ') + '...';
 };
 
-export const createGuestSession = async () => {
-  const url = `https://api.themoviedb.org/3/authentication/guest_session/new?api_key=${API_KEY}`;
-
-  try {
-    const response = await fetch(url);
-    if (!response.ok) {
-      throw new Error('Network response was not ok');
-    }
-    const data = await response.json();
-    return data.guest_session_id;
-  } catch (error) {
-    console.error('Ошибка при создании гостевой сессии:', error);
-    throw error;
-  }
-};
-
-const SearchTab = () => {
+const SearchTab = ({ updateRatedMovies }) => {
   const [movies, setMovies] = useState([]);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -103,7 +87,7 @@ const SearchTab = () => {
           cachedMovie.id === movie.id ? { ...cachedMovie, rating: value } : cachedMovie
         )
       : [...cachedMovies, { ...movie, rating: value }];
-    localStorage.setItem('ratedMovies', JSON.stringify(updatedMovies));
+    updateRatedMovies(updatedMovies);
   };
 
   const handlePageChange = (page) => {
@@ -142,6 +126,7 @@ const SearchTab = () => {
                       ? truncateText(movie.overview, 33)
                       : 'Описание отсутствует'
                   }
+                  rating={movie.rating || 0}
                   onRateChange={(value) => handleRateChange(movie, value)}
                 />
               );
