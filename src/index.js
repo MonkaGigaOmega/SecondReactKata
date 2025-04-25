@@ -12,7 +12,7 @@ import { GenresProvider } from './components/GenresContext';
 function App() {
   const [guestSessionId, setGuestSessionId] = useState(null);
   const [ratedMovies, setRatedMovies] = useState([]);
-  const [error, setError] = useState(null); // Состояние для хранения сообщения об ошибке
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const initGuestSession = async () => {
@@ -20,13 +20,12 @@ function App() {
         const sessionId = await createGuestSession();
         setGuestSessionId(sessionId);
 
-        // Загружаем оцененные фильмы из localStorage при инициализации
         const cachedMovies = localStorage.getItem('ratedMovies');
         if (cachedMovies) {
           setRatedMovies(JSON.parse(cachedMovies));
         }
       } catch (error) {
-        setError('Ошибка при создании гостевой сессии. Пожалуйста, включите VPN'); // Устанавливаем сообщение об ошибке
+        setError('Ошибка при создании гостевой сессии. Пожалуйста, включите VPN');
       }
     };
 
@@ -41,17 +40,30 @@ function App() {
   if (!guestSessionId && !error) {
     return <div>Loading...</div>;
   }
+  const truncateText = (text, charLimit) => {
+    if (text.length <= charLimit) {
+      return text;
+    }
+    const truncated = text.slice(0, charLimit);
+    const lastSpaceIndex = truncated.lastIndexOf(' ');
+    if (lastSpaceIndex !== -1) {
+      return `${truncated.slice(0, lastSpaceIndex)}...`;
+    }
+    return `${truncated}...`;
+  };
 
   const items = [
     {
       key: '1',
       label: 'Search',
-      children: <SearchTab ratedMovies={ratedMovies} updateRatedMovies={updateRatedMovies} />,
+      children: (
+        <SearchTab ratedMovies={ratedMovies} updateRatedMovies={updateRatedMovies} truncateText={truncateText} />
+      ),
     },
     {
       key: '2',
       label: 'Rated',
-      children: <Rated ratedMovies={ratedMovies} updateRatedMovies={updateRatedMovies} />,
+      children: <Rated ratedMovies={ratedMovies} updateRatedMovies={updateRatedMovies} truncateText={truncateText} />,
     },
   ];
 
@@ -61,7 +73,7 @@ function App() {
         <Alert message="Отсутствует подключение к интернету." type="error" showIcon />
       </Offline>
       {error && <Alert message="Ошибка" description={error} type="error" showIcon closable />}
-      <Tabs defaultActiveKey="1" items={items} />
+      <Tabs defaultActiveKey="1" items={items} centered />
     </GenresProvider>
   );
 }

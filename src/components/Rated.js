@@ -1,31 +1,23 @@
-import React from 'react'
-import { format } from 'date-fns'
+import React from 'react';
+import { format } from 'date-fns';
 
-import CardItem from './CardItem'
-import './Rated.css'
-import { useGenres } from './GenresContext'
+import CardItem from './CardItem';
+import './Rated.css';
+import { useGenres } from './GenresContext';
 
-const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w500'
+const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w500';
 
-const truncateText = (text, wordLimit) => {
-  const words = text.split(' ')
-  if (words.length <= wordLimit) {
-    return text
-  }
-  return `${words.slice(0, wordLimit).join(' ')}...`
-}
-
-function Rated({ ratedMovies, updateRatedMovies }) {
+function Rated({ ratedMovies, updateRatedMovies, truncateText }) {
   const clearLocalStorage = () => {
-    updateRatedMovies([])
-  }
+    updateRatedMovies([]);
+  };
 
-  const genreIdsToNames = useGenres()
+  const genreIdsToNames = useGenres();
 
   const handleRateChange = (movieId, value) => {
-    const updatedMovies = ratedMovies.map((movie) => (movie.id === movieId ? { ...movie, rating: value } : movie))
-    updateRatedMovies(updatedMovies)
-  }
+    const updatedMovies = ratedMovies.map((movie) => (movie.id === movieId ? { ...movie, rating: value } : movie));
+    updateRatedMovies(updatedMovies);
+  };
 
   return (
     <>
@@ -34,11 +26,11 @@ function Rated({ ratedMovies, updateRatedMovies }) {
       ) : (
         <div className="slide">
           {ratedMovies.map((movie) => {
-            if (!movie) return null
+            if (!movie) return null;
 
             const releaseDate = movie.release_date
               ? format(new Date(movie.release_date), 'MMMM d, yyyy')
-              : 'Дата неизвестна'
+              : 'Дата неизвестна';
 
             return (
               <CardItem
@@ -48,11 +40,12 @@ function Rated({ ratedMovies, updateRatedMovies }) {
                 filmTitle={movie.title}
                 releaseDate={releaseDate}
                 genreIds={(movie.genre_ids || []).map((id) => genreIdsToNames[id])}
-                description={truncateText(movie.overview, 33) || 'Описание отсутствует'}
+                description={truncateText(movie.overview, 140) || 'Описание отсутствует'}
                 rating={movie.rating || 0}
+                userRating={movie.rating} // Передаем movie.rating как userRating
                 onRateChange={(value) => handleRateChange(movie.id, value)}
               />
-            )
+            );
           })}
         </div>
       )}
@@ -64,7 +57,7 @@ function Rated({ ratedMovies, updateRatedMovies }) {
         )}
       </div>
     </>
-  )
+  );
 }
 
-export default Rated
+export default Rated;

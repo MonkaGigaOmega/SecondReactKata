@@ -11,6 +11,7 @@ export default function CardItem({
   description,
   onRateChange,
   rating: initialRating = 0,
+  userRating,
 }) {
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
@@ -53,11 +54,11 @@ export default function CardItem({
         <div className="round-rating" style={{ borderColor: getRatingColor(rating) }}>
           {rating}
         </div>
-        <h2 className="title">{filmTitle}</h2>
+        <h3 className="title">{filmTitle}</h3>
         <div className="release-date">{releaseDate}</div>
         <div className="genre">
-          {genreIds?.map((genre, index) => (
-            <span key={index} className="genre__item">
+          {genreIds?.map((genre) => (
+            <span key={genre.id} className="genre__item">
               {genre}
             </span>
           ))}
@@ -65,15 +66,10 @@ export default function CardItem({
         <div className="description">{description}</div>
         <Rate
           allowHalf
-          value={rating}
+          defaultValue={userRating} // Используем userRating для отображения количества звезд
           onChange={handleRateChange}
           count={10}
-          style={{ fontSize: '20px', marginTop: 'auto', marginBottom: '10px' }}
-          character={({ index }) => (
-            <span className="rate-star" style={{ color: index < rating ? getRatingColor(rating) : '#d9d9d9' }}>
-              ★
-            </span>
-          )}
+          style={{ fontSize: '16px', marginTop: 'auto', marginBottom: '10px' }}
         />
       </div>
     </div>
