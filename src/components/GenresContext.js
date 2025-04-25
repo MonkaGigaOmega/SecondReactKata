@@ -1,31 +1,35 @@
-import React, { createContext, useContext } from 'react'
+import React, { createContext, useContext, useEffect, useState } from 'react';
 
-const genreIdsToNames = {
-  28: 'Боевик',
-  12: 'Приключения',
-  16: 'Анимация',
-  35: 'Комедия',
-  80: 'Криминал',
-  99: 'Документальный',
-  18: 'Драма',
-  10751: 'Семейный',
-  14: 'Фэнтези',
-  36: 'История',
-  27: 'Ужасы',
-  10402: 'Музыка',
-  9648: 'Детектив',
-  10749: 'Мелодрама',
-  878: 'Фантастика',
-  10770: 'Телевизионный фильм',
-  53: 'Триллер',
-  10752: 'Военный',
-  37: 'Вестерн',
-}
+const API_KEY = '34c3a46faa654dbc0fab960ecd4f6c31';
+const API_URL = 'https://api.themoviedb.org/3';
 
-const GenresContext = createContext()
+const GenresContext = createContext();
 
 export function GenresProvider({ children }) {
-  return <GenresContext.Provider value={genreIdsToNames}>{children}</GenresContext.Provider>
+  const [genreIdsToNames, setGenreIdsToNames] = useState({});
+
+  useEffect(() => {
+    const fetchGenres = async () => {
+      try {
+        const response = await fetch(`${API_URL}/genre/movie/list?api_key=${API_KEY}&language=en-US`);
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+        const genresMap = data.genres.reduce((acc, genre) => {
+          acc[genre.id] = genre.name;
+          return acc;
+        }, {});
+        setGenreIdsToNames(genresMap);
+      } catch (error) {
+        console.error('Error fetching genres:', error);
+      }
+    };
+
+    fetchGenres();
+  }, []);
+
+  return <GenresContext.Provider value={genreIdsToNames}>{children}</GenresContext.Provider>;
 }
 
-export const useGenres = () => useContext(GenresContext)
+export const useGenres = () => useContext(GenresContext);

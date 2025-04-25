@@ -31,7 +31,8 @@ body {
 .slide-noFilms {
   font-size: 28px;
   font-weight: 600;
-  margin-bottom: 36px;
+  margin-bottom: 26px;
+  margin-top: 26px;
   display: flex;
   justify-content: center;
 }

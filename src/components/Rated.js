@@ -11,7 +11,7 @@ function Rated({ ratedMovies, updateRatedMovies, truncateText }) {
   const clearLocalStorage = () => {
     updateRatedMovies([]);
   };
-
+  const roundToHalf = (number) => Math.round(number * 10) / 10;
   const genreIdsToNames = useGenres();
 
   const handleRateChange = (movieId, value) => {
@@ -22,7 +22,7 @@ function Rated({ ratedMovies, updateRatedMovies, truncateText }) {
   return (
     <>
       {ratedMovies.length === 0 ? (
-        <div className="slide-noFilms">Список оценок пуст.</div>
+        <div className="slide-noFilms">List of ratings is empty</div>
       ) : (
         <div className="slide">
           {ratedMovies.map((movie) => {
@@ -30,7 +30,7 @@ function Rated({ ratedMovies, updateRatedMovies, truncateText }) {
 
             const releaseDate = movie.release_date
               ? format(new Date(movie.release_date), 'MMMM d, yyyy')
-              : 'Дата неизвестна';
+              : 'Date unknown';
 
             return (
               <CardItem
@@ -40,9 +40,9 @@ function Rated({ ratedMovies, updateRatedMovies, truncateText }) {
                 filmTitle={movie.title}
                 releaseDate={releaseDate}
                 genreIds={(movie.genre_ids || []).map((id) => genreIdsToNames[id])}
-                description={truncateText(movie.overview, 140) || 'Описание отсутствует'}
-                rating={movie.rating || 0}
-                userRating={movie.rating} // Передаем movie.rating как userRating
+                description={truncateText(movie.overview, 140) || 'No description'}
+                rating={roundToHalf(movie.vote_average)}
+                userRating={movie.rating}
                 onRateChange={(value) => handleRateChange(movie.id, value)}
               />
             );
@@ -52,7 +52,7 @@ function Rated({ ratedMovies, updateRatedMovies, truncateText }) {
       <div className="rating-button-wrapper">
         {ratedMovies.length !== 0 && (
           <button onClick={clearLocalStorage} type="button" className="rating-button">
-            Очистить список
+            Clear list
           </button>
         )}
       </div>

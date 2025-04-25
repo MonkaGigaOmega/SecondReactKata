@@ -11,19 +11,19 @@ export default function CardItem({
   description,
   onRateChange,
   rating: initialRating = 0,
-  userRating,
+  userRating: userStars,
 }) {
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
-  const [rating, setRating] = useState(initialRating);
+  const [rating] = useState(initialRating);
+  const [userRating, setUserRating] = useState(userStars);
   const handleImageLoad = () => setIsLoading(false);
   const handleImageError = () => {
     setIsLoading(false);
     setHasError(true);
   };
-
   const handleRateChange = (value) => {
-    setRating(value);
+    setUserRating(value);
     if (onRateChange) onRateChange(value);
   };
 
@@ -33,7 +33,6 @@ export default function CardItem({
     if (value >= 3) return '#E97E00';
     return '#E90000';
   };
-
   return (
     <div className="cardItem">
       <div className="film-logo-wrapper">
@@ -48,7 +47,7 @@ export default function CardItem({
             style={{ display: isLoading ? 'none' : 'block' }}
           />
         )}
-        {hasError && <div className="film-logo-placeholder">Постера пока нет в нашей базе</div>}
+        {hasError && <div className="film-logo-placeholder">No poster</div>}
       </div>
       <div className="content">
         <div className="round-rating" style={{ borderColor: getRatingColor(rating) }}>
@@ -66,7 +65,7 @@ export default function CardItem({
         <div className="description">{description}</div>
         <Rate
           allowHalf
-          defaultValue={userRating} // Используем userRating для отображения количества звезд
+          defaultValue={userRating}
           onChange={handleRateChange}
           count={10}
           style={{ fontSize: '16px', marginTop: 'auto', marginBottom: '10px' }}

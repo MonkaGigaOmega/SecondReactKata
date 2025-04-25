@@ -70,9 +70,9 @@ function App() {
   return (
     <GenresProvider>
       <Offline>
-        <Alert message="Отсутствует подключение к интернету." type="error" showIcon />
+        <Alert message="No internet connection." type="error" showIcon className="network-error" />
       </Offline>
-      {error && <Alert message="Ошибка" description={error} type="error" showIcon closable />}
+      {error && <Alert message="Error" description={error} type="error" showIcon closable />}
       <Tabs defaultActiveKey="1" items={items} centered />
     </GenresProvider>
   );

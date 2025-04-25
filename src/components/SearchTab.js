@@ -1,6 +1,6 @@
 import './SearchTab.css';
 import { Pagination, Spin, Alert } from 'antd';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { format } from 'date-fns';
 import { debounce } from 'lodash';
 
@@ -19,36 +19,34 @@ function SearchTab({ updateRatedMovies, truncateText }) {
   const [filmName, setFilmName] = useState('return');
   const [page, setPage] = useState(1);
   const [totalMovies, setTotalMovies] = useState(0);
-  const [userRating, setUserRating] = useState(0);
-  const fetchMoviesByKeyword = useCallback(
-    debounce(async (keyword, page) => {
-      try {
-        setIsLoading(true);
-        const response = await fetch(
-          `${API_URL}/search/movie?api_key=${API_KEY}&language=ru-RU&query=${keyword}&page=${page}`
-        );
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        const data = await response.json();
-        setMovies(data.results);
-        setTotalMovies(data.total_results);
-        setPage(page);
-      } catch (error) {
-        console.error('Ошибка при получении данных:', error);
-        setError('Ошибка fetch запроса. Запрос не отправлен. Включите VPN или перезагрузите страницу.');
-      } finally {
-        setIsLoading(false);
+  const [userRating] = useState(0);
+  const fetchMoviesByKeyword = async (keyword, page) => {
+    try {
+      setIsLoading(true);
+      const response = await fetch(
+        `${API_URL}/search/movie?api_key=${API_KEY}&language=en-EN&query=${keyword}&page=${page}`
+      );
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
       }
-    }, 800),
-    []
-  );
+      const data = await response.json();
+      setMovies(data.results);
+      setTotalMovies(data.total_results);
+      setPage(page);
+    } catch (error) {
+      setError('Fetch request failed. Turn on VPN or refresh the page.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const debouncedFetch = useRef(debounce(fetchMoviesByKeyword, 800)).current;
 
   useEffect(() => {
     if (filmName) {
-      fetchMoviesByKeyword(filmName, page);
+      debouncedFetch(filmName, page);
     }
-  }, [filmName, page, fetchMoviesByKeyword]);
+  }, [debouncedFetch, filmName, page]);
 
   const handleRateChange = (movie, value) => {
     const cachedMovies = JSON.parse(localStorage.getItem('ratedMovies')) || [];
@@ -76,7 +74,7 @@ function SearchTab({ updateRatedMovies, truncateText }) {
               <Spin size="large" />
             </div>
           ) : (
-            <div className="slide-noFilms">Напишите название фильма.</div>
+            <div className="slide-noFilms">Write the name of the movie.</div>
           )
         ) : movies.length > 0 ? (
           <div className="slide">
@@ -84,7 +82,6 @@ function SearchTab({ updateRatedMovies, truncateText }) {
               const releaseDate = movie.release_date
                 ? format(new Date(movie.release_date), 'MMMM d, yyyy')
                 : 'Дата неизвестна';
-              console.log(movie);
               return (
                 <CardItem
                   key={movie.id}
@@ -96,7 +93,7 @@ function SearchTab({ updateRatedMovies, truncateText }) {
                   description={
                     truncateText(movie.overview, 140).length !== 0
                       ? truncateText(movie.overview, 140)
-                      : 'Описание отсутствует'
+                      : 'No description'
                   }
                   rating={roundToHalf(movie.vote_average)}
                   userRating={userRating}
@@ -106,7 +103,7 @@ function SearchTab({ updateRatedMovies, truncateText }) {
             })}
           </div>
         ) : (
-          <div className="slide-noFilms">Oops! Что-то пошло не так или такого фильма не существует.</div>
+          <div className="slide-noFilms">Oops! Something went wrong or this movie doesn't exist.</div>
         )}
         <Pagination
           className="pagination"
