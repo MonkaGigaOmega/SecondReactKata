@@ -24,7 +24,7 @@ function SearchTab({ updateRatedMovies, truncateText }) {
     try {
       setIsLoading(true);
       const response = await fetch(
-        `${API_URL}/search/movie?api_key=${API_KEY}&language=en-EN&query=${keyword}&page=${page}`
+        `${API_URL}/search/movie?api_key=${API_KEY}&language=en-EN&query=${keyword}&page=${page}`,
       );
       if (!response.ok) {
         throw new Error('Network response was not ok');
@@ -50,9 +50,13 @@ function SearchTab({ updateRatedMovies, truncateText }) {
 
   const handleRateChange = (movie, value) => {
     const cachedMovies = JSON.parse(localStorage.getItem('ratedMovies')) || [];
-    const updatedMovies = cachedMovies.some((cachedMovie) => cachedMovie.id === movie.id)
+    const updatedMovies = cachedMovies.some(
+      (cachedMovie) => cachedMovie.id === movie.id,
+    )
       ? cachedMovies.map((cachedMovie) =>
-          cachedMovie.id === movie.id ? { ...cachedMovie, rating: value } : cachedMovie
+          cachedMovie.id === movie.id
+            ? { ...cachedMovie, rating: value }
+            : cachedMovie,
         )
       : [...cachedMovies, { ...movie, rating: value }];
     updateRatedMovies(updatedMovies);
@@ -65,7 +69,15 @@ function SearchTab({ updateRatedMovies, truncateText }) {
   const genreIdsToNames = useGenres();
   return (
     <>
-      {error && <Alert message="Ошибка" description={error} type="error" showIcon closable />}
+      {error && (
+        <Alert
+          message="Ошибка"
+          description={error}
+          type="error"
+          showIcon
+          closable
+        />
+      )}
       <>
         <SearchPanel filmName={filmName} setFilmName={setFilmName} />
         {isLoading ? (
@@ -103,7 +115,9 @@ function SearchTab({ updateRatedMovies, truncateText }) {
             })}
           </div>
         ) : (
-          <div className="slide-noFilms">Oops! Something went wrong or this movie doesn't exist.</div>
+          <div className="slide-noFilms">
+            Oops! Something went wrong or this movie doesn&apos;t exist.
+          </div>
         )}
         <Pagination
           className="pagination"

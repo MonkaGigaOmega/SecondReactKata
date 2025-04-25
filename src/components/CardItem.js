@@ -50,7 +50,10 @@ export default function CardItem({
         {hasError && <div className="film-logo-placeholder">No poster</div>}
       </div>
       <div className="content">
-        <div className="round-rating" style={{ borderColor: getRatingColor(rating) }}>
+        <div
+          className="round-rating"
+          style={{ borderColor: getRatingColor(rating) }}
+        >
           {rating}
         </div>
         <h3 className="title">{filmTitle}</h3>

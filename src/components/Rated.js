@@ -15,7 +15,9 @@ function Rated({ ratedMovies, updateRatedMovies, truncateText }) {
   const genreIdsToNames = useGenres();
 
   const handleRateChange = (movieId, value) => {
-    const updatedMovies = ratedMovies.map((movie) => (movie.id === movieId ? { ...movie, rating: value } : movie));
+    const updatedMovies = ratedMovies.map((movie) =>
+      movie.id === movieId ? { ...movie, rating: value } : movie,
+    );
     updateRatedMovies(updatedMovies);
   };
 
@@ -39,8 +41,12 @@ function Rated({ ratedMovies, updateRatedMovies, truncateText }) {
                 imgAlt={movie.title}
                 filmTitle={movie.title}
                 releaseDate={releaseDate}
-                genreIds={(movie.genre_ids || []).map((id) => genreIdsToNames[id])}
-                description={truncateText(movie.overview, 140) || 'No description'}
+                genreIds={(movie.genre_ids || []).map(
+                  (id) => genreIdsToNames[id],
+                )}
+                description={
+                  truncateText(movie.overview, 140) || 'No description'
+                }
                 rating={roundToHalf(movie.vote_average)}
                 userRating={movie.rating}
                 onRateChange={(value) => handleRateChange(movie.id, value)}
@@ -51,7 +57,11 @@ function Rated({ ratedMovies, updateRatedMovies, truncateText }) {
       )}
       <div className="rating-button-wrapper">
         {ratedMovies.length !== 0 && (
-          <button onClick={clearLocalStorage} type="button" className="rating-button">
+          <button
+            onClick={clearLocalStorage}
+            type="button"
+            className="rating-button"
+          >
             Clear list
           </button>
         )}

@@ -11,7 +11,9 @@ export function GenresProvider({ children }) {
   useEffect(() => {
     const fetchGenres = async () => {
       try {
-        const response = await fetch(`${API_URL}/genre/movie/list?api_key=${API_KEY}&language=en-US`);
+        const response = await fetch(
+          `${API_URL}/genre/movie/list?api_key=${API_KEY}&language=en-US`,
+        );
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
@@ -29,7 +31,11 @@ export function GenresProvider({ children }) {
     fetchGenres();
   }, []);
 
-  return <GenresContext.Provider value={genreIdsToNames}>{children}</GenresContext.Provider>;
+  return (
+    <GenresContext.Provider value={genreIdsToNames}>
+      {children}
+    </GenresContext.Provider>
+  );
 }
 
 export const useGenres = () => useContext(GenresContext);

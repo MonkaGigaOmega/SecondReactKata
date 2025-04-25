@@ -11,6 +11,6 @@ export const createGuestSession = async () => {
     const data = await response.json();
     return data.guest_session_id;
   } catch (error) {
-    throw error;
+    throw new Error('Network response was not ok');
   }
 };

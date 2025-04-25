@@ -25,7 +25,9 @@ function App() {
           setRatedMovies(JSON.parse(cachedMovies));
         }
       } catch (error) {
-        setError('Ошибка при создании гостевой сессии. Пожалуйста, включите VPN');
+        setError(
+          'Ошибка при создании гостевой сессии. Пожалуйста, включите VPN',
+        );
       }
     };
 
@@ -57,22 +59,45 @@ function App() {
       key: '1',
       label: 'Search',
       children: (
-        <SearchTab ratedMovies={ratedMovies} updateRatedMovies={updateRatedMovies} truncateText={truncateText} />
+        <SearchTab
+          ratedMovies={ratedMovies}
+          updateRatedMovies={updateRatedMovies}
+          truncateText={truncateText}
+        />
       ),
     },
     {
       key: '2',
       label: 'Rated',
-      children: <Rated ratedMovies={ratedMovies} updateRatedMovies={updateRatedMovies} truncateText={truncateText} />,
+      children: (
+        <Rated
+          ratedMovies={ratedMovies}
+          updateRatedMovies={updateRatedMovies}
+          truncateText={truncateText}
+        />
+      ),
     },
   ];
 
   return (
     <GenresProvider>
       <Offline>
-        <Alert message="No internet connection." type="error" showIcon className="network-error" />
+        <Alert
+          message="No internet connection."
+          type="error"
+          showIcon
+          className="network-error"
+        />
       </Offline>
-      {error && <Alert message="Error" description={error} type="error" showIcon closable />}
+      {error && (
+        <Alert
+          message="Error"
+          description={error}
+          type="error"
+          showIcon
+          closable
+        />
+      )}
       <Tabs defaultActiveKey="1" items={items} centered />
     </GenresProvider>
   );

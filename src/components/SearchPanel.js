@@ -1,9 +1,9 @@
-import './SearchPanel.css'
+import './SearchPanel.css';
 
 export default function SearchPanel({ filmName, setFilmName }) {
   const onFilmNameChange = (e) => {
-    setFilmName(e.target.value)
-  }
+    setFilmName(e.target.value);
+  };
 
   return (
     <div className="search-panel">
@@ -15,5 +15,5 @@ export default function SearchPanel({ filmName, setFilmName }) {
         onChange={onFilmNameChange}
       />
     </div>
-  )
+  );
 }
