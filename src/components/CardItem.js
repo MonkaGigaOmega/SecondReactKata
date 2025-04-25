@@ -1,5 +1,5 @@
 import './CardItem.css';
-import React from 'react';
+import { useState } from 'react';
 import { Spin, Rate } from 'antd';
 
 export default function CardItem({
@@ -12,9 +12,9 @@ export default function CardItem({
   onRateChange,
   rating: initialRating = 0,
 }) {
-  const [isLoading, setIsLoading] = React.useState(true);
-  const [hasError, setHasError] = React.useState(false);
-  const [rating, setRating] = React.useState(initialRating);
+  const [isLoading, setIsLoading] = useState(true);
+  const [hasError, setHasError] = useState(false);
+  const [rating, setRating] = useState(initialRating);
   const handleImageLoad = () => setIsLoading(false);
   const handleImageError = () => {
     setIsLoading(false);
@@ -22,8 +22,8 @@ export default function CardItem({
   };
 
   const handleRateChange = (value) => {
-    setRating(value); // Обновите локальное состояние
-    if (onRateChange) onRateChange(value); // Вызовите обработчик изменения рейтинга
+    setRating(value);
+    if (onRateChange) onRateChange(value);
   };
 
   const getRatingColor = (value) => {

@@ -1,11 +1,15 @@
 import ReactDOM from 'react-dom/client';
+import './index.css';
 import { Tabs, Alert } from 'antd';
 import { useState, useEffect } from 'react';
+import { Offline } from 'react-detect-offline';
+
 import SearchTab from './components/SearchTab';
 import Rated from './components/Rated';
 import { createGuestSession } from './components/createGuestSession';
-import { Offline } from 'react-detect-offline';
-const App = () => {
+import { GenresProvider } from './components/GenresContext';
+
+function App() {
   const [guestSessionId, setGuestSessionId] = useState(null);
   const [ratedMovies, setRatedMovies] = useState([]);
   const [error, setError] = useState(null); // Состояние для хранения сообщения об ошибке
@@ -15,7 +19,6 @@ const App = () => {
       try {
         const sessionId = await createGuestSession();
         setGuestSessionId(sessionId);
-        console.log(sessionId);
 
         // Загружаем оцененные фильмы из localStorage при инициализации
         const cachedMovies = localStorage.getItem('ratedMovies');
@@ -23,7 +26,6 @@ const App = () => {
           setRatedMovies(JSON.parse(cachedMovies));
         }
       } catch (error) {
-        console.error('Ошибка при создании гостевой сессии:', error);
         setError('Ошибка при создании гостевой сессии. Пожалуйста, включите VPN'); // Устанавливаем сообщение об ошибке
       }
     };
@@ -54,15 +56,15 @@ const App = () => {
   ];
 
   return (
-    <>
+    <GenresProvider>
       <Offline>
         <Alert message="Отсутствует подключение к интернету." type="error" showIcon />
       </Offline>
       {error && <Alert message="Ошибка" description={error} type="error" showIcon closable />}
       <Tabs defaultActiveKey="1" items={items} />
-    </>
+    </GenresProvider>
   );
-};
+}
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(<App />);

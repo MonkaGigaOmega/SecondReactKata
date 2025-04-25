@@ -1,50 +1,31 @@
-import React from 'react';
-import { Spin } from 'antd';
-import CardItem from './CardItem';
-import { format } from 'date-fns';
-import './Rated.css';
+import React from 'react'
+import { format } from 'date-fns'
 
-const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w500';
+import CardItem from './CardItem'
+import './Rated.css'
+import { useGenres } from './GenresContext'
 
-const genreIdsToNames = {
-  28: 'Боевик',
-  12: 'Приключения',
-  16: 'Анимация',
-  35: 'Комедия',
-  80: 'Криминал',
-  99: 'Документальный',
-  18: 'Драма',
-  10751: 'Семейный',
-  14: 'Фэнтези',
-  36: 'История',
-  27: 'Ужасы',
-  10402: 'Музыка',
-  9648: 'Детектив',
-  10749: 'Мелодрама',
-  878: 'Фантастика',
-  10770: 'Телевизионный фильм',
-  53: 'Триллер',
-  10752: 'Военный',
-  37: 'Вестерн',
-};
+const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w500'
 
 const truncateText = (text, wordLimit) => {
-  const words = text.split(' ');
+  const words = text.split(' ')
   if (words.length <= wordLimit) {
-    return text;
+    return text
   }
-  return words.slice(0, wordLimit).join(' ') + '...';
-};
+  return `${words.slice(0, wordLimit).join(' ')}...`
+}
 
-const Rated = ({ ratedMovies, updateRatedMovies }) => {
+function Rated({ ratedMovies, updateRatedMovies }) {
   const clearLocalStorage = () => {
-    updateRatedMovies([]);
-  };
+    updateRatedMovies([])
+  }
+
+  const genreIdsToNames = useGenres()
 
   const handleRateChange = (movieId, value) => {
-    const updatedMovies = ratedMovies.map((movie) => (movie.id === movieId ? { ...movie, rating: value } : movie));
-    updateRatedMovies(updatedMovies);
-  };
+    const updatedMovies = ratedMovies.map((movie) => (movie.id === movieId ? { ...movie, rating: value } : movie))
+    updateRatedMovies(updatedMovies)
+  }
 
   return (
     <>
@@ -53,11 +34,11 @@ const Rated = ({ ratedMovies, updateRatedMovies }) => {
       ) : (
         <div className="slide">
           {ratedMovies.map((movie) => {
-            if (!movie) return null;
+            if (!movie) return null
 
             const releaseDate = movie.release_date
               ? format(new Date(movie.release_date), 'MMMM d, yyyy')
-              : 'Дата неизвестна';
+              : 'Дата неизвестна'
 
             return (
               <CardItem
@@ -68,10 +49,10 @@ const Rated = ({ ratedMovies, updateRatedMovies }) => {
                 releaseDate={releaseDate}
                 genreIds={(movie.genre_ids || []).map((id) => genreIdsToNames[id])}
                 description={truncateText(movie.overview, 33) || 'Описание отсутствует'}
-                rating={movie.rating || 0} // Передаем текущий рейтинг
-                onRateChange={(value) => handleRateChange(movie.id, value)} // Добавляем обработчик изменения рейтинга
+                rating={movie.rating || 0}
+                onRateChange={(value) => handleRateChange(movie.id, value)}
               />
-            );
+            )
           })}
         </div>
       )}
@@ -83,7 +64,7 @@ const Rated = ({ ratedMovies, updateRatedMovies }) => {
         )}
       </div>
     </>
-  );
-};
+  )
+}
 
-export default Rated;
+export default Rated

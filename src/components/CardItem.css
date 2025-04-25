@@ -37,8 +37,9 @@
   padding-right: 40px;
 }
 .release-date {
-  font-size: 16px;
+  font-size: 14px;
   margin-bottom: 7px;
+  color: gray;
 }
 .content {
   padding-left: 16px;

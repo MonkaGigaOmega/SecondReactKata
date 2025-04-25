@@ -11,7 +11,6 @@ export const createGuestSession = async () => {
     const data = await response.json();
     return data.guest_session_id;
   } catch (error) {
-    console.error('Ошибка при создании гостевой сессии:', error);
     throw error;
   }
 };
