@@ -6,14 +6,12 @@ export default function SearchPanel({ filmName, setFilmName }) {
   };
 
   return (
-    <div className="search-panel">
-      <input
-        className="search-panel__input"
-        placeholder="Type to serach..."
-        type="text"
-        value={filmName}
-        onChange={onFilmNameChange}
-      />
-    </div>
+    <input
+      className="search-panel"
+      placeholder="Type to serach..."
+      type="text"
+      value={filmName}
+      onChange={onFilmNameChange}
+    />
   );
 }

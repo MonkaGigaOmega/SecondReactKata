@@ -1,9 +1,10 @@
-.search-panel__input {
-  border: solid 1px lightgray;
-  border-radius: 5px;
-  width: 938px;
-  height: 40px;
-}
 .search-panel {
-  margin-bottom: 36px;
+  border: 1px solid #d9d9d9;
+  border-radius: 3px;
+  font-size: 16px;
+  height: 40px;
+  padding-left: 12px;
+  margin-bottom: 16px;
+  width: 100%;
+  box-sizing: border-box;
 }
