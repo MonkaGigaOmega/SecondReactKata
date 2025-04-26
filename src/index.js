@@ -2,7 +2,6 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import { Tabs, Alert } from 'antd';
 import { useState, useEffect } from 'react';
-import { Offline } from 'react-detect-offline';
 import { truncateText } from './functions/truncateText';
 import SearchTab from './components/SearchTab';
 import Rated from './components/Rated';
@@ -70,14 +69,6 @@ function App() {
 
   return (
     <GenresProvider>
-      <Offline>
-        <Alert
-          message="No internet connection."
-          type="error"
-          showIcon
-          className="network-error"
-        />
-      </Offline>
       {error && (
         <Alert
           message="Error"

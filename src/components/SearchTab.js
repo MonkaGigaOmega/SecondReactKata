@@ -3,7 +3,7 @@ import { Pagination, Spin, Alert } from 'antd';
 import { useState, useEffect, useRef } from 'react';
 import { format } from 'date-fns';
 import { debounce } from 'lodash';
-
+import { Offline } from 'react-detect-offline';
 import SearchPanel from './SearchPanel';
 import CardItem from './CardItem';
 import { useGenres } from './GenresContext';
@@ -69,6 +69,14 @@ function SearchTab({ updateRatedMovies, truncateText }) {
   const genreIdsToNames = useGenres();
   return (
     <>
+      <Offline>
+        <Alert
+          message="No internet connection."
+          type="error"
+          showIcon
+          className="network-error"
+        />
+      </Offline>
       {error && (
         <Alert
           message="Ошибка"
