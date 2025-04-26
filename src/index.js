@@ -3,7 +3,7 @@ import './index.css';
 import { Tabs, Alert } from 'antd';
 import { useState, useEffect } from 'react';
 import { Offline } from 'react-detect-offline';
-
+import { truncateText } from './functions/truncateText';
 import SearchTab from './components/SearchTab';
 import Rated from './components/Rated';
 import { createGuestSession } from './components/createGuestSession';
@@ -42,17 +42,6 @@ function App() {
   if (!guestSessionId && !error) {
     return <div>Loading...</div>;
   }
-  const truncateText = (text, charLimit) => {
-    if (text.length <= charLimit) {
-      return text;
-    }
-    const truncated = text.slice(0, charLimit);
-    const lastSpaceIndex = truncated.lastIndexOf(' ');
-    if (lastSpaceIndex !== -1) {
-      return `${truncated.slice(0, lastSpaceIndex)}...`;
-    }
-    return `${truncated}...`;
-  };
 
   const items = [
     {

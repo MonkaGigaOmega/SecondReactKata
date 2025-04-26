@@ -1,6 +1,5 @@
 import React from 'react';
 import { format } from 'date-fns';
-
 import CardItem from './CardItem';
 import './Rated.css';
 import { useGenres } from './GenresContext';
