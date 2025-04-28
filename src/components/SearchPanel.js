@@ -8,7 +8,7 @@ export default function SearchPanel({ filmName, setFilmName }) {
   return (
     <input
       className="search-panel"
-      placeholder="Type to serach..."
+      placeholder="Type to search..."
       type="text"
       value={filmName}
       onChange={onFilmNameChange}

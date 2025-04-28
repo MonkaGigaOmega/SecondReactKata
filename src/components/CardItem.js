@@ -59,11 +59,13 @@ export default function CardItem({
         <h3 className="title">{filmTitle}</h3>
         <div className="release-date">{releaseDate}</div>
         <div className="genre">
-          {genreIds?.map((genre) => (
-            <span key={genre.id} className="genre__item">
-              {genre}
-            </span>
-          ))}
+          <div className="genre">
+            {Object.values(genreIds || {}).map((genreName, index) => (
+              <span key={index} className="genre__item">
+                {genreName}
+              </span>
+            ))}
+          </div>
         </div>
         <div className="description">{description}</div>
         <Rate

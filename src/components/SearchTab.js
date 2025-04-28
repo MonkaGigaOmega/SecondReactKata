@@ -16,15 +16,19 @@ function SearchTab({ updateRatedMovies, truncateText }) {
   const [movies, setMovies] = useState([]);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [filmName, setFilmName] = useState('return');
+  const [filmName, setFilmName] = useState('');
   const [page, setPage] = useState(1);
   const [totalMovies, setTotalMovies] = useState(0);
   const [userRating] = useState(0);
-  const fetchMoviesByKeyword = async (keyword, page) => {
+
+  const fetchMovies = async (keyword, page) => {
+    const endpoint = keyword ? 'search/movie' : 'movie/popular';
+    const query = keyword ? `&query=${keyword}` : '';
+
     try {
       setIsLoading(true);
       const response = await fetch(
-        `${API_URL}/search/movie?api_key=${API_KEY}&language=en-EN&query=${keyword}&page=${page}`,
+        `${API_URL}/${endpoint}?api_key=${API_KEY}&language=en-EN${query}&page=${page}`,
       );
       if (!response.ok) {
         throw new Error('Network response was not ok');
@@ -40,13 +44,27 @@ function SearchTab({ updateRatedMovies, truncateText }) {
     }
   };
 
-  const debouncedFetch = useRef(debounce(fetchMoviesByKeyword, 800)).current;
+  const debouncedFetch = useRef(
+    debounce((keyword, page) => {
+      fetchMovies(keyword, page);
+    }, 800),
+  ).current;
 
   useEffect(() => {
     if (filmName) {
-      debouncedFetch(filmName, page);
+      debouncedFetch(filmName, 1);
+    } else {
+      fetchMovies('', page);
     }
-  }, [debouncedFetch, filmName, page]);
+  }, [debouncedFetch, filmName]);
+
+  useEffect(() => {
+    if (filmName) {
+      fetchMovies(filmName, page);
+    } else {
+      fetchMovies('', page);
+    }
+  }, [page]);
 
   const handleRateChange = (movie, value) => {
     const cachedMovies = JSON.parse(localStorage.getItem('ratedMovies')) || [];
@@ -61,15 +79,15 @@ function SearchTab({ updateRatedMovies, truncateText }) {
       : [...cachedMovies, { ...movie, rating: value }];
     updateRatedMovies(updatedMovies);
   };
+
   const roundToHalf = (number) => Math.round(number * 10) / 10;
+
   const handlePageChange = (page) => {
     setPage(page);
-    fetchMoviesByKeyword(filmName, page);
   };
+
   const genreIdsToNames = useGenres();
-  if (Offline) {
-    console.log('bebra');
-  }
+
   return (
     <>
       <Offline>
@@ -91,20 +109,20 @@ function SearchTab({ updateRatedMovies, truncateText }) {
       )}
       <>
         <SearchPanel filmName={filmName} setFilmName={setFilmName} />
-        {isLoading ? (
-          filmName.length > 0 ? (
-            <div className="loader">
-              <Spin size="large" />
-            </div>
-          ) : (
-            <div className="slide-noFilms">Write the name of the movie.</div>
-          )
+        {isLoading && filmName.length > 0 ? (
+          <div className="loader">
+            <Spin size="large" />
+          </div>
         ) : movies.length > 0 ? (
           <div className="slide">
             {movies.map((movie) => {
               const releaseDate = movie.release_date
                 ? format(new Date(movie.release_date), 'MMMM d, yyyy')
                 : 'Дата неизвестна';
+              const genreIds =
+                movie.genre_ids
+                  ?.map((id) => genreIdsToNames[id])
+                  .filter(Boolean) || [];
               return (
                 <CardItem
                   key={movie.id}
@@ -112,7 +130,7 @@ function SearchTab({ updateRatedMovies, truncateText }) {
                   imgAlt={movie.title}
                   filmTitle={movie.title}
                   releaseDate={releaseDate}
-                  genreIds={movie.genre_ids.map((id) => genreIdsToNames[id])}
+                  genreIds={genreIds}
                   description={
                     truncateText(movie.overview, 140).length !== 0
                       ? truncateText(movie.overview, 140)
@@ -127,7 +145,9 @@ function SearchTab({ updateRatedMovies, truncateText }) {
           </div>
         ) : (
           <div className="slide-noFilms">
-            Oops! Something went wrong or this movie doesn&apos;t exist.
+            {filmName.length > 0
+              ? 'Oops! Something went wrong or this movie doesn&apos;t exist.'
+              : 'Write the name of the movie.'}
           </div>
         )}
         <Pagination
