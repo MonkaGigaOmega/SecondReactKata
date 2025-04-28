@@ -51,7 +51,7 @@ function SearchTab({ updateRatedMovies, truncateText }) {
   ).current;
 
   useEffect(() => {
-    fetchMovies('', 1); // Загружаем популярные фильмы при первом рендере
+    fetchMovies('', 1);
   }, []);
 
   useEffect(() => {
