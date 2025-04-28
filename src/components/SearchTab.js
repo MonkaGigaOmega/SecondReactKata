@@ -51,12 +51,16 @@ function SearchTab({ updateRatedMovies, truncateText }) {
   ).current;
 
   useEffect(() => {
+    fetchMovies('', 1); // Загружаем популярные фильмы при первом рендере
+  }, []);
+
+  useEffect(() => {
     if (filmName) {
       debouncedFetch(filmName, 1);
     } else {
-      fetchMovies('', page);
+      fetchMovies('', 1);
     }
-  }, [debouncedFetch, filmName]);
+  }, [filmName, debouncedFetch]);
 
   useEffect(() => {
     if (filmName) {
@@ -109,7 +113,7 @@ function SearchTab({ updateRatedMovies, truncateText }) {
       )}
       <>
         <SearchPanel filmName={filmName} setFilmName={setFilmName} />
-        {isLoading && filmName.length > 0 ? (
+        {isLoading ? (
           <div className="loader">
             <Spin size="large" />
           </div>
@@ -126,13 +130,17 @@ function SearchTab({ updateRatedMovies, truncateText }) {
               return (
                 <CardItem
                   key={movie.id}
-                  imgSrc={`${IMAGE_BASE_URL}${movie.poster_path}`}
+                  imgSrc={
+                    movie.poster_path
+                      ? `${IMAGE_BASE_URL}${movie.poster_path}`
+                      : null
+                  }
                   imgAlt={movie.title}
                   filmTitle={movie.title}
                   releaseDate={releaseDate}
                   genreIds={genreIds}
                   description={
-                    truncateText(movie.overview, 140).length !== 0
+                    movie.overview
                       ? truncateText(movie.overview, 140)
                       : 'No description'
                   }
@@ -146,18 +154,20 @@ function SearchTab({ updateRatedMovies, truncateText }) {
         ) : (
           <div className="slide-noFilms">
             {filmName.length > 0
-              ? 'Oops! Something went wrong or this movie doesn&apos;t exist.'
-              : 'Write the name of the movie.'}
+              ? `Oops! Something went wrong or this movie doesn't exist.`
+              : 'No movies found'}
           </div>
         )}
-        <Pagination
-          className="pagination"
-          current={page}
-          total={totalMovies}
-          defaultPageSize={20}
-          onChange={handlePageChange}
-          showSizeChanger={false}
-        />
+        {movies.length > 0 && (
+          <Pagination
+            className="pagination"
+            current={page}
+            total={totalMovies}
+            defaultPageSize={20}
+            onChange={handlePageChange}
+            showSizeChanger={false}
+          />
+        )}
       </>
     </>
   );
