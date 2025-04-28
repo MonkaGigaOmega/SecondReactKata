@@ -67,6 +67,9 @@ function SearchTab({ updateRatedMovies, truncateText }) {
     fetchMoviesByKeyword(filmName, page);
   };
   const genreIdsToNames = useGenres();
+  if (Offline) {
+    console.log('bebra');
+  }
   return (
     <>
       <Offline>

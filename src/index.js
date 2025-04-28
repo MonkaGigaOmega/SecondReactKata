@@ -12,7 +12,6 @@ function App() {
   const [guestSessionId, setGuestSessionId] = useState(null);
   const [ratedMovies, setRatedMovies] = useState([]);
   const [error, setError] = useState(null);
-
   useEffect(() => {
     const initGuestSession = async () => {
       try {
@@ -25,7 +24,7 @@ function App() {
         }
       } catch (error) {
         setError(
-          'Ошибка при создании гостевой сессии. Пожалуйста, включите VPN',
+          'Failed to create guest session. Please enable your VPN and retry the operation.',
         );
       }
     };
